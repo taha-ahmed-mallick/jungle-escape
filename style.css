@@ -1,0 +1,42 @@
+* {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+      transition: .75s opacity;
+}
+
+div.screen {
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+}
+
+div.screen.top {
+      z-index: 2;
+}
+
+div.screen.hidden {
+      z-index: 1;
+      display: none;
+}
+
+div.intro {
+      background: #8BC34A;
+      z-index: 1;
+}
+
+div.start {
+      background: #03A9F4;
+}
+
+div.game {
+      background-color: #de993a;
+      background-image: url(./wood-plank-light.png);
+      background-size: 150px;
+      background-position: -36px -60px;
+}
+
+canvas#game {
+      position: absolute;
+}
