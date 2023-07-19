@@ -32,7 +32,7 @@ div.start {
 
 div.game {
       background-color: #de993a;
-      background-image: url(./wood-plank-light.png);
+      /* background-image: url(./wood-plank-light.png); */
       background-size: 150px;
       background-position: -36px -60px;
 }
