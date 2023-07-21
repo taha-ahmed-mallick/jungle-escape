@@ -30,11 +30,12 @@ function screenTransition(screenR, screenE) {
 
 strtBtn.addEventListener("click", () => screenTransition(screens[1], screens[2]));
 
+// decoration and game
 let woodPlank = new Image();
-woodPlank.src = './wood-plank-light.png';
+woodPlank.src = './imgs/wood-plank-light.png';
 
 let tree = new Image();
-tree.src = "./trees.png";
+tree.src = "./imgs/trees.png";
 
 function drawDecorations() {
       ctx.fillStyle = "#2E7D32";
@@ -89,6 +90,48 @@ function drawBridge() {
       ctx.fillRect(canvas.width * 0.8, 0, 1, canvas.height);
 }
 
+let map = [
+      [1, 1, 1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1, 1, 1],
+      [1, 0, 0, 0, 1, 0, 0],
+      [1, 0, 0, 0, 1, 0, 0],
+      [1, 0, 0, 0, 1, 1, 1],
+      [1, 0, 0, 0, 0, 3, 1],
+      [1, 0, 0, 0, 0, 1, 1],
+      [1, 0, 0, 0, 0, 1, 0],
+      [1, 0, 0, 0, 2, 1, 0],
+      [1, 1, 1, 1, 1, 1, 0]
+];
+
+let refrenceImg = [
+      {
+            name: "air",
+            path: null
+      },
+      {
+            name: "log",
+            path: "imgs/wood-log.png"
+      },
+      {
+            name: "spawn",
+            path: null
+      },
+      {
+            name: "finish",
+            path: null
+      }
+];
+
+class Map {
+      constructor(map) {
+            this.map = map;
+      }
+
+      drawMap() { }
+}
+
 function frameGenerator() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawDecorations();
@@ -96,3 +139,5 @@ function frameGenerator() {
 }
 
 frameGenerator();
+
+let level1 = new Map(map);
