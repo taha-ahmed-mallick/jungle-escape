@@ -1,6 +1,7 @@
 // HTML Elements
 let screens = document.getElementsByClassName("screen");
 let strtBtn = document.getElementsByClassName("strt-btn")[0];
+let level = 1, lvlURL;
 
 // removing intro screen
 setTimeout(() => screenTransition(screens[0], screens[1]), /*3000*/1);
@@ -16,4 +17,7 @@ function screenTransition(screenR, screenE) {
       }, 750);
 }
 
-strtBtn.addEventListener("click", () => screenTransition(screens[1], screens[2]));
+strtBtn.addEventListener("click", () => {
+      screenTransition(screens[1], screens[2]);
+      startGame();
+});

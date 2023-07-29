@@ -1,7 +1,7 @@
 let canvas = document.getElementsByTagName("canvas")[0];
 
 let ctx = canvas.getContext("2d");
-let a, plankInfo;
+let pauseAnimation, plankInfo, levelMap;
 
 function resize(event = true) {
       canvas.width = window.innerWidth;
@@ -108,21 +108,6 @@ function drawBridge() {
       }
 };
 
-let map = [
-      [1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 1, 1, 1],
-      [1, 0, 0, 0, 1, 0, 0],
-      [1, 0, 0, 0, 1, 0, 0],
-      [1, 0, 0, 0, 1, 1, 1],
-      [1, 0, 0, 0, 0, 3, 1],
-      [1, 0, 0, 0, 0, 1, 1],
-      [1, 0, 0, 0, 0, 1, 0],
-      [1, 0, 0, 0, 2, 1, 0],
-      [1, 1, 1, 1, 1, 1, 0]
-];
-
 let refrenceImg = [
       {
             name: "air",
@@ -151,7 +136,7 @@ for (let i = 0; i < refrenceImg.length; i++) {
 
 class Map {
       constructor(map) {
-            this.map = map;
+            this.map = map.map;
             this.size = null;
             this.calcAdd = [0, 0];
       }
@@ -188,18 +173,32 @@ class Map {
       }
 };
 
-let level1 = new Map(map);
-
-import("./level1-10.js").then(({ default: Maps1_10 }) => {
-      let mapSeries = new Maps1_10();
-      console.log(mapSeries.maps);
-});
+class Player {
+      constructor(x, y, map) {
+            this.x = x;
+            this.y = y;
+            this.map = map;
+      }
+}
 
 function frameGenerator() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawDecorations();
-      level1.drawMap();
-      a = requestAnimationFrame(frameGenerator);
+      levelMap.drawMap();
+      pauseAnimation = requestAnimationFrame(frameGenerator);
 };
 
-frameGenerator();
+function startGame() {
+      lvlURL = "./levels/level";
+      if (level <= 10) {
+            lvlURL += "1-10.js";
+      }
+
+      let lvlNum = level % 10 - 1;
+      lvlNum < 0 ? lvlNum = 9 : null;
+      import(lvlURL).then(({ default: MapsSeries }) => {
+            let mapSeries = new MapsSeries();
+            levelMap = new Map(mapSeries.maps[lvlNum]);
+            frameGenerator();
+      });
+}
