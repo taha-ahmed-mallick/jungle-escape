@@ -1,7 +1,7 @@
 let canvas = document.getElementsByTagName("canvas")[0];
 
 let ctx = canvas.getContext("2d");
-let pauseAnimation, plankInfo, levelMap;
+let pauseAnimation, plankInfo, levelMap, player;
 
 function resize(event = true) {
       canvas.width = window.innerWidth;
@@ -124,6 +124,10 @@ let refrenceImg = [
       {
             name: "finish",
             path: null
+      },
+      {
+            name: "coin",
+            path: null
       }
 ];
 
@@ -173,11 +177,109 @@ class Map {
       }
 };
 
+let character = new Image();
+character.src = "./imgs/character.png";
+
 class Player {
-      constructor(x, y, map) {
-            this.x = x;
-            this.y = y;
-            this.map = map;
+      constructor(map, size, calcAdd) {
+            this.pos = {
+                  x: null,
+                  y: null
+            };
+            this.map = map.map;
+            this.size = size;
+            this.calcAdd = calcAdd;
+            this.positionCalc();
+      }
+
+      draw() {
+            ctx.drawImage(character, this.pos.x, this.pos.y, this.size, this.size);
+      }
+
+      positionCalc() {
+            if (this.pos.x == null) {
+                  for (let i = 0; i < this.map.length; i++) {
+                        for (let j = 0; j < this.map[0].length; j++) {
+                              if (this.map[i][j] == 2) {
+                                    this.pos.x = this.size * j + this.calcAdd[0];
+                                    this.pos.y = this.size * i + this.calcAdd[1];
+                              }
+                        }
+                  }
+            }
+      }
+
+      movement(move) {
+            console.log(move);
+            let movement = setInterval(() => {
+                  if (move == "up") {
+                        this.pos.y--;
+                        clearInterval(movement);
+                  } else if (move == "down") {
+                        this.pos.y++;
+                        clearInterval(movement);
+                  } else if (move == "left") {
+                        this.pos.x--;
+                        clearInterval(movement);
+                  } else if (move == "right") {
+                        this.pos.x++;
+                        clearInterval(movement);
+                  }
+            }, 100);
+      }
+}
+
+// movement selection
+window.addEventListener("keydown", event => movement(event));
+window.addEventListener("touchstart", event => {
+      coordinates.xi = event.changedTouches[0].screenX;
+      coordinates.yi = event.changedTouches[0].screenY;
+});
+window.addEventListener("touchend", event => {
+      coordinates.xf = event.changedTouches[0].screenX;
+      coordinates.yf = event.changedTouches[0].screenY;
+      movement(event);
+});
+window.addEventListener("mousedown", event => {
+      coordinates.xi = event.screenX;
+      coordinates.yi = event.screenY;
+});
+window.addEventListener("mouseup", event => {
+      coordinates.xf = event.screenX;
+      coordinates.yf = event.screenY;
+      movement(event);
+});
+
+let coordinates = {
+      xi: null,
+      yi: null,
+      xf: null,
+      yf: null
+};
+
+function movement(event) {
+      if (player != null) {
+            if (event.type.includes("key")) {
+                  if (event.keyCode == 37) player.movement("left");
+                  if (event.keyCode == 38) player.movement("up");
+                  if (event.keyCode == 39) player.movement("right");
+                  if (event.keyCode == 40) player.movement("down");
+            } else if (event.type.includes("mouse") || event.type.includes("touch")) {
+                  let distance = {
+                        x: coordinates.xf - coordinates.xi,
+                        y: coordinates.yf - coordinates.yi
+                  }
+                  let length = Math.sqrt((distance.x) ** 2 + (distance.y) ** 2);
+                  let angle = 360 - Math.atan2(distance.y, distance.x) * 180 / Math.PI;
+                  angle = Math.round((angle / 360 - Math.floor(angle / 360)) * 360);
+
+                  if (length > 40) {
+                        if (angle > 45 && angle < 135) player.movement("up");
+                        if (angle > 135 && angle < 225) player.movement("left");
+                        if (angle > 225 && angle < 315) player.movement("down");
+                        if ((angle > 0 && angle < 45) || (angle > 315 && angle < 360) || angle == 0) player.movement("right");
+                  }
+            }
       }
 }
 
@@ -185,6 +287,7 @@ function frameGenerator() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawDecorations();
       levelMap.drawMap();
+      player.draw();
       pauseAnimation = requestAnimationFrame(frameGenerator);
 };
 
@@ -199,6 +302,9 @@ function startGame() {
       import(lvlURL).then(({ default: MapsSeries }) => {
             let mapSeries = new MapsSeries();
             levelMap = new Map(mapSeries.maps[lvlNum]);
+            drawDecorations();
+            levelMap.sizeCalculator();
+            player = new Player(mapSeries.maps[lvlNum], levelMap.size, levelMap.calcAdd);
             frameGenerator();
       });
 }
